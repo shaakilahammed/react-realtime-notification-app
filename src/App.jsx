@@ -52,22 +52,24 @@ const Username = styled.span`
 function App() {
   const [username, setUsername] = useState('');
   const [user, setUser] = useState('');
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io('http://localhost:5000');
+    setSocket(io('http://localhost:5000'));
+  }, []);
 
-    console.log(socket);
-  });
+  useEffect(() => {
+    socket?.emit('newUser', user);
+  }, [socket, user]);
 
-  console.log(user);
   return (
     <Body>
       <Container>
         {user ? (
           <>
-            <Navbar />
+            <Navbar socket={socket} />
             {posts.map((post) => (
-              <Card key={post.id} post={post} />
+              <Card key={post.id} post={post} socket={socket} user={user} />
             ))}
             <Username>{user}</Username>
           </>

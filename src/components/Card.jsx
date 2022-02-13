@@ -45,34 +45,46 @@ const CardIcon = styled.div`
   padding: 0 10px;
 `;
 
-const Card = ({ post }) => {
+const Card = ({ post, socket, user }) => {
   const [liked, setLiked] = useState(false);
 
-  const handleNotification = () => {
-    setLiked(!liked);
+  const handleNotification = (type, likeClick = false) => {
+    likeClick && setLiked(!liked);
+    socket.emit('sendNotification', {
+      senderName: user,
+      receiverName: post.username,
+      type: type,
+    });
   };
   return (
     <Container>
       <Info>
         <UserImage src={post.userImg} />
-        <UserName>{post.fullname}</UserName>
+        <UserName>
+          {post.fullname} - {post.username}
+        </UserName>
       </Info>
       <PostImage src={post.postImg} />
       <Interection>
         {liked ? (
           <CardIcon>
-            <Favorite style={{ color: 'red' }} onClick={handleNotification} />
+            <Favorite
+              style={{ color: 'red' }}
+              onClick={() => handleNotification(1, true)}
+            />
           </CardIcon>
         ) : (
           <CardIcon>
-            <FavoriteBorderOutlined onClick={handleNotification} />
+            <FavoriteBorderOutlined
+              onClick={() => handleNotification(2, true)}
+            />
           </CardIcon>
         )}
         <CardIcon>
-          <ChatBubble />
+          <ChatBubble onClick={() => handleNotification(3)} />
         </CardIcon>
         <CardIcon>
-          <Share />
+          <Share onClick={() => handleNotification(4)} />
         </CardIcon>
         <CardIcon>
           <InfoRounded />
